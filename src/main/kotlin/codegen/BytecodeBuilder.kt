@@ -1,37 +1,49 @@
-package code
-
-private typealias ConstantId = Int
+package codegen
 
 private typealias LabelId = Int
+
+data class Function(val name: String, val arity: Int, val chunkId: ChunkId)
 
 class BytecodeBuilder {
     private val chunks = mutableListOf<ChunkBuilder>()
 
-    fun addChunk(): ChunkBuilder = ChunkBuilder().also { chunks.add(it) }
-
-    fun addChunk(code: ChunkBuilder.() -> Unit) {
-        addChunk().addCode(code)
+    fun addChunk(code: ChunkBuilder.() -> Unit): ChunkId {
+        val chunkBuilder = ChunkBuilder()
+        chunks.add(chunkBuilder)
+        chunkBuilder.apply(code)
+        return (chunks.size - 1).toByte()
     }
 
-    fun compile() = Bytecode(chunks.map { it.compile() })
+    fun addFunction(name: String, arity: Int, code: ChunkBuilder.() -> Unit): Function {
+        val chunkId = addChunk(code)
+        return Function(name, arity, chunkId)
+    }
+
+    fun bytecode() = Bytecode(chunks.map { it.chunk() })
 
     inner class ChunkBuilder {
         private val constants = mutableListOf<BytecodeConstant>()
-        private val instructions = mutableListOf<Instruction>()
+        private val instructions = mutableListOf<Directive>()
 
         private var currentBytePosition: Int = 0
 
         private var nextLabelId = 0
         private val labelPositions = mutableMapOf<LabelId, Int>()
 
-        fun putConstantIfNeeded(constant: BytecodeConstant): ConstantId {
+        fun storeConstant(string: String): ConstantId = storeConstant(StringConstant(string))
+
+        fun storeConstant(int: Int): ConstantId = storeConstant(IntConstant(int))
+
+        fun storeConstant(function: Function): ConstantId = storeConstant(FunctionConstant(function.chunkId))
+
+        private fun storeConstant(constant: BytecodeConstant): ConstantId {
             val index = constants.indexOf(constant)
             return if (index != -1) {
                 index
             } else {
                 constants.add(constant)
                 constants.size - 1
-            }
+            }.toByte()
         }
 
         fun looseLabel(name: String = "") = Label(name, nextLabelId).also { nextLabelId += 1 }
@@ -44,7 +56,7 @@ class BytecodeBuilder {
             }
         }
 
-        operator fun Instruction.unaryPlus() {
+        operator fun Directive.unaryPlus() {
             instructions.add(this)
             currentBytePosition += nBytes
         }
@@ -53,7 +65,7 @@ class BytecodeBuilder {
             apply(code)
         }
 
-        fun compile(): BytecodeChunk {
+        fun chunk(): BytecodeChunk {
             val code = instructions.flatMap { instruction ->
                 val bytes = instruction.compile()
                 check(bytes.size == instruction.nBytes) { "Instruction compiled to wrong nBytes" }

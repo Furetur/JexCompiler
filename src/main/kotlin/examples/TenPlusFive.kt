@@ -1,8 +1,8 @@
 package examples
 
-import code.BytecodeBuilder
-import code.add
-import code.literal
+import codegen.BytecodeBuilder
+import codegen.dsl.*
+import java.io.File
 
 fun main() {
     val builder = BytecodeBuilder()
@@ -10,6 +10,12 @@ fun main() {
         literal(10)
         literal(5)
         add()
+        print()
     }
-    println(builder.compile())
+    val bytecode = builder.bytecode()
+    println(bytecode)
+    println(bytecode.compile())
+    val file = File("output/tenPlusFive.bytecode")
+    file.createNewFile()
+    builder.bytecode().write(file)
 }

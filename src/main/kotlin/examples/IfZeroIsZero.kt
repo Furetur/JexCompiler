@@ -1,6 +1,8 @@
 package examples
 
-import code.*
+import codegen.BytecodeBuilder
+import codegen.dsl.*
+import java.io.File
 
 fun main() {
     val builder = BytecodeBuilder()
@@ -21,5 +23,8 @@ fun main() {
         putLabel(afterThenLabel)
         pop() // pop 0 == 0 from stack
     }
-    println(builder.compile())
+    println(builder.bytecode())
+    val file = File("output/zeroIsZero.bytecode")
+    file.createNewFile()
+    builder.bytecode().write(file)
 }

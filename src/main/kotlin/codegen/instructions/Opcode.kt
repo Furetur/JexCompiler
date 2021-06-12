@@ -1,4 +1,4 @@
-package code
+package codegen.instructions
 
 enum class Opcode {
     Constant, // 0
