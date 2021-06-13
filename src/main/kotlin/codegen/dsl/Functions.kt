@@ -1,6 +1,9 @@
 package codegen.dsl
 
 import codegen.BytecodeBuilder
+import codegen.ChunkId
+import codegen.Code
+import codegen.FunctionConstant
 import codegen.instructions.*
 
 fun BytecodeBuilder.ChunkBuilder.literal(value: Int) {
@@ -23,51 +26,21 @@ fun BytecodeBuilder.ChunkBuilder.literal(value: Boolean) {
     }
 }
 
+fun BytecodeBuilder.ChunkBuilder.function(chunkId: ChunkId) {
+    val constantId = storeConstant(FunctionConstant(chunkId))
+    +ConstantInstruction(constantId)
+}
+
 fun BytecodeBuilder.ChunkBuilder.pop() {
     +PopInstruction
-}
-
-fun BytecodeBuilder.ChunkBuilder.print() {
-    +PrintInstruction
-}
-
-fun BytecodeBuilder.ChunkBuilder.equal() {
-    +EqualInstruction
-}
-
-fun BytecodeBuilder.ChunkBuilder.greater() {
-    +GreaterInstruction
-}
-
-fun BytecodeBuilder.ChunkBuilder.less() {
-    +LessInstruction
-}
-
-fun BytecodeBuilder.ChunkBuilder.negate() {
-    +NegateInstruction
-}
-
-fun BytecodeBuilder.ChunkBuilder.add() {
-    +AddInstruction
-}
-
-fun BytecodeBuilder.ChunkBuilder.subtract() {
-    +SubtractInstruction
-}
-
-fun BytecodeBuilder.ChunkBuilder.multiply() {
-    +MultiplyInstruction
-}
-
-fun BytecodeBuilder.ChunkBuilder.divide() {
-    +DivideInstruction
 }
 
 fun BytecodeBuilder.ChunkBuilder.getLocalVariable(relativeSlot: Byte) {
     +GetLocalInstruction(relativeSlot)
 }
 
-fun BytecodeBuilder.ChunkBuilder.setLocalVariable(relativeSlot: Byte) {
+fun BytecodeBuilder.ChunkBuilder.setLocalVariable(relativeSlot: Byte, value: Code) {
+    +value
     +SetLocalInstruction(relativeSlot)
 }
 
@@ -94,3 +67,17 @@ fun BytecodeBuilder.ChunkBuilder.jumpForwardIfFalse(destination: BytecodeBuilder
     +JumpForwardIfFalseInstruction(destination, selfLabel)
     putLabel(selfLabel)
 }
+
+fun BytecodeBuilder.ChunkBuilder.self() {
+    function(id)
+}
+
+fun BytecodeBuilder.ChunkBuilder.call(arity: Byte) {
+    +CallInstruction(arity)
+}
+
+fun BytecodeBuilder.ChunkBuilder.ret(value: Code) {
+    +value
+    +ReturnInstruction
+}
+

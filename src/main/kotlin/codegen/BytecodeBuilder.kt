@@ -1,27 +1,30 @@
 package codegen
 
-private typealias LabelId = Int
 
-data class Function(val name: String, val arity: Int, val chunkId: ChunkId)
+typealias Code = BytecodeBuilder.ChunkBuilder.() -> Unit
+private typealias LabelId = Int
 
 class BytecodeBuilder {
     private val chunks = mutableListOf<ChunkBuilder>()
 
-    fun addChunk(code: ChunkBuilder.() -> Unit): ChunkId {
-        val chunkBuilder = ChunkBuilder()
+    fun addChunk(code: Code): ChunkBuilder {
+        val chunkBuilder = ChunkBuilder(chunks.size.toByte())
         chunks.add(chunkBuilder)
         chunkBuilder.apply(code)
-        return (chunks.size - 1).toByte()
+        return chunkBuilder
     }
 
-    fun addFunction(name: String, arity: Int, code: ChunkBuilder.() -> Unit): Function {
-        val chunkId = addChunk(code)
-        return Function(name, arity, chunkId)
+    fun addFunction(name: String, arity: Int, code: Code): ChunkBuilder {
+        val chunkBuilder = addChunk {}
+        chunkBuilder.storeConstant(name)
+        chunkBuilder.storeConstant(arity)
+        chunkBuilder.addCode(code)
+        return chunkBuilder
     }
 
     fun bytecode() = Bytecode(chunks.map { it.chunk() })
 
-    inner class ChunkBuilder {
+    inner class ChunkBuilder(val id: ChunkId) {
         private val constants = mutableListOf<BytecodeConstant>()
         private val instructions = mutableListOf<Directive>()
 
@@ -34,9 +37,8 @@ class BytecodeBuilder {
 
         fun storeConstant(int: Int): ConstantId = storeConstant(IntConstant(int))
 
-        fun storeConstant(function: Function): ConstantId = storeConstant(FunctionConstant(function.chunkId))
 
-        private fun storeConstant(constant: BytecodeConstant): ConstantId {
+        fun storeConstant(constant: BytecodeConstant): ConstantId {
             val index = constants.indexOf(constant)
             return if (index != -1) {
                 index
@@ -61,8 +63,12 @@ class BytecodeBuilder {
             currentBytePosition += nBytes
         }
 
-        fun addCode(code: ChunkBuilder.() -> Unit) {
+        fun addCode(code: Code) {
             apply(code)
+        }
+
+        operator fun Code.unaryPlus() {
+            this@ChunkBuilder.addCode(this)
         }
 
         fun chunk(): BytecodeChunk {
