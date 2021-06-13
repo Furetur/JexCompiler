@@ -4,7 +4,9 @@ import codegen.ByteInstruction
 import codegen.ConstantId
 import codegen.NullaryInstruction
 
-class ConstantInstruction(constantIndex: ConstantId) : ByteInstruction(Opcode.Constant, constantIndex)
+class ConstantInstruction(private val constantIndex: ConstantId) : ByteInstruction(Opcode.Constant, constantIndex) {
+    override fun toAssemblyString(): String = "Constant @$constantIndex"
+}
 
 object NullInstruction : NullaryInstruction(Opcode.Null)
 

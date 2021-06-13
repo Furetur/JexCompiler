@@ -17,6 +17,8 @@ class JumpForwardInstruction(
         val offset = destinationLabel.position - selfLabel.position
         return listOf(offset.toByte())
     }
+
+    override fun toAssemblyString() = "JumpForward (${destinationLabel.assemblyName})"
 }
 
 class JumpForwardIfFalseInstruction(
@@ -29,6 +31,8 @@ class JumpForwardIfFalseInstruction(
         val offset = destinationLabel.position - selfLabel.position
         return listOf(offset.toByte())
     }
+
+    override fun toAssemblyString() = "JumpForwardIfFalse (${destinationLabel.assemblyName})"
 }
 
 class JumpBackwardInstruction(
@@ -41,6 +45,8 @@ class JumpBackwardInstruction(
         val offset = selfLabel.position - destinationLabel.position
         return listOf(offset.toByte())
     }
+
+    override fun toAssemblyString() = "JumpBackward (${destinationLabel.assemblyName})"
 }
 
 class JumpDirective(
@@ -48,11 +54,16 @@ class JumpDirective(
     private val selfLabel: BytecodeBuilder.ChunkBuilder.Label
 ) : Directive {
     override val nBytes: Int = 2
-    override fun compile(): List<Byte> = if (destinationLabel.position > selfLabel.position) {
+
+    private fun compileInstruction(): Instruction = if (destinationLabel.position > selfLabel.position) {
         JumpForwardInstruction(destinationLabel, selfLabel)
     } else {
         JumpBackwardInstruction(destinationLabel, selfLabel)
-    }.compile()
+    }
+
+    override fun compile(): List<Byte> = compileInstruction().compile()
+
+    override fun toAssemblyString(): String = compileInstruction().toAssemblyString()
 }
 
 class CallInstruction(arity: Byte) : ByteInstruction(Opcode.Call, arity)

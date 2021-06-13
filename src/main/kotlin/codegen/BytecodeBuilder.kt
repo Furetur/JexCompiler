@@ -24,13 +24,20 @@ class BytecodeBuilder {
 
     fun bytecode() = Bytecode(chunks.map { it.chunk() })
 
+    fun printAssembly() {
+        for (chunk in chunks) {
+            chunk.printAssembly()
+            println()
+        }
+    }
+
     inner class ChunkBuilder(val id: ChunkId) {
         private val constants = mutableListOf<BytecodeConstant>()
         private val instructions = mutableListOf<Directive>()
 
         private var currentBytePosition: Int = 0
 
-        private var nextLabelId = 0
+        private val labels = mutableListOf<Label>()
         private val labelPositions = mutableMapOf<LabelId, Int>()
 
         fun storeConstant(string: String): ConstantId = storeConstant(StringConstant(string))
@@ -48,7 +55,7 @@ class BytecodeBuilder {
             }.toByte()
         }
 
-        fun looseLabel(name: String = "") = Label(name, nextLabelId).also { nextLabelId += 1 }
+        fun looseLabel(name: String? = null) = Label(name, labels.size).also { labels.add(it) }
 
         fun putLabel(label: Label) {
             if (label.id in labelPositions) {
@@ -80,9 +87,29 @@ class BytecodeBuilder {
             return BytecodeChunk(constants, code)
         }
 
-        inner class Label(val name: String, val id: LabelId) {
+        inner class Label(val name: String?, val id: LabelId) {
             val position: Int
                 get() = labelPositions[id] ?: error("Label not put")
+
+            val assemblyName = "$name $id"
+        }
+
+        fun printAssembly() {
+            println("Chunk #$id")
+            for ((index, constant) in constants.withIndex()) {
+                println("@$index: $constant")
+            }
+            var position = 0
+            for (instruction in instructions) {
+                val labels = labelPositions.entries.filter { it.value == position }.map { labels[it.key] }
+                for (label in labels) {
+                    if (label.name is String) {
+                        println("${label.assemblyName}:")
+                    }
+                }
+                println("\t" + instruction.toAssemblyString())
+                position += instruction.nBytes
+            }
         }
     }
 }

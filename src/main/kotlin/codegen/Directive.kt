@@ -5,6 +5,7 @@ import codegen.instructions.Opcode
 interface Directive {
     val nBytes: Int
     fun compile(): List<Byte>
+    fun toAssemblyString(): String
 }
 
 abstract class Instruction : Directive {
@@ -16,6 +17,7 @@ abstract class Instruction : Directive {
         get() = 1 + nArgumentBytes
 
     override fun compile() = listOf(opcode.compile()) + compileArguments()
+    override fun toAssemblyString() = "${opcode.name} ${compileArguments().joinToString(" ")}"
 }
 
 abstract class NullaryInstruction(override val opcode: Opcode) : Instruction() {

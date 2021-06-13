@@ -33,8 +33,8 @@ fun main() {
             )
         }
     }
-    println(builder.bytecode())
     val file = File("output/fact_6.bytecode")
     file.createNewFile()
     builder.bytecode().write(file)
+    builder.printAssembly()
 }
