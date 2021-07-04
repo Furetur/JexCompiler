@@ -6,14 +6,8 @@ import java.io.File
 
 fun main() {
     val builder = BytecodeBuilder()
-    builder.addChunk {
-        print {
-            function(1)
-            literal(6)
-            call(1)
-        }
-    }
-    builder.addFunction("fact", 1) {
+
+    val factFunction = builder.addFunction("fact", 1) {
         ifStatement(
             condition = {
                 equal(left = { getLocalVariable(1) }, right = { literal(1) })
@@ -33,8 +27,16 @@ fun main() {
             )
         }
     }
+
+    builder.main {
+        print {
+            function(factFunction)
+            literal(6)
+            call(1)
+        }
+    }
+
     val file = File("output/fact_6.bytecode")
     file.createNewFile()
     builder.bytecode().write(file)
-    builder.printAssembly()
 }

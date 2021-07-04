@@ -6,7 +6,7 @@ import java.io.File
 
 fun main() {
     val builder = BytecodeBuilder()
-    builder.addChunk {
+    builder.main {
         literal(0)
         whileLoop(
             condition = {
@@ -27,4 +27,5 @@ fun main() {
     val file = File("output/print100numbers.bytecode")
     file.createNewFile()
     builder.bytecode().write(file)
+    builder.printAssembly()
 }

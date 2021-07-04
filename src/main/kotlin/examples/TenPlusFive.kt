@@ -6,7 +6,7 @@ import java.io.File
 
 fun main() {
     val builder = BytecodeBuilder()
-    builder.addChunk {
+    builder.main {
         print {
             add(
                 left = { literal(10) },

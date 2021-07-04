@@ -1,15 +1,11 @@
 package codegen.instructions
 
-import codegen.ByteInstruction
-import codegen.Directive
-import codegen.Instruction
-import codegen.NullaryInstruction
-import codegen.BytecodeBuilder
+import codegen.*
 
 
 class JumpForwardInstruction(
-    private val destinationLabel: BytecodeBuilder.ChunkBuilder.Label,
-    private val selfLabel: BytecodeBuilder.ChunkBuilder.Label
+    private val destinationLabel: ChunkBuilder.Label,
+    private val selfLabel: ChunkBuilder.Label
 ) : Instruction() {
     override val opcode = Opcode.JumpForward
     override val nArgumentBytes: Int = 1
@@ -22,8 +18,8 @@ class JumpForwardInstruction(
 }
 
 class JumpForwardIfFalseInstruction(
-    private val destinationLabel: BytecodeBuilder.ChunkBuilder.Label,
-    private val selfLabel: BytecodeBuilder.ChunkBuilder.Label
+    private val destinationLabel: ChunkBuilder.Label,
+    private val selfLabel: ChunkBuilder.Label
 ) : Instruction() {
     override val opcode = Opcode.JumpForwardIfFalse
     override val nArgumentBytes: Int = 1
@@ -36,8 +32,8 @@ class JumpForwardIfFalseInstruction(
 }
 
 class JumpBackwardInstruction(
-    private val destinationLabel: BytecodeBuilder.ChunkBuilder.Label,
-    private val selfLabel: BytecodeBuilder.ChunkBuilder.Label
+    private val destinationLabel: ChunkBuilder.Label,
+    private val selfLabel: ChunkBuilder.Label
 ) : Instruction() {
     override val opcode = Opcode.JumpBackward
     override val nArgumentBytes: Int = 1
@@ -50,8 +46,8 @@ class JumpBackwardInstruction(
 }
 
 class JumpDirective(
-    private val destinationLabel: BytecodeBuilder.ChunkBuilder.Label,
-    private val selfLabel: BytecodeBuilder.ChunkBuilder.Label
+    private val destinationLabel: ChunkBuilder.Label,
+    private val selfLabel: ChunkBuilder.Label
 ) : Directive {
     override val nBytes: Int = 2
 

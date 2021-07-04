@@ -1,24 +1,21 @@
 package codegen.dsl
 
-import codegen.BytecodeBuilder
-import codegen.ChunkId
-import codegen.Code
-import codegen.FunctionConstant
+import codegen.*
 import codegen.instructions.*
 
-fun BytecodeBuilder.ChunkBuilder.literal(value: Int) {
+fun ChunkBuilder.literal(value: Int) {
     +ConstantInstruction(storeConstant(value))
 }
 
-fun BytecodeBuilder.ChunkBuilder.literal(value: String) {
+fun ChunkBuilder.literal(value: String) {
     +ConstantInstruction(storeConstant(value))
 }
 
-fun BytecodeBuilder.ChunkBuilder.literal(nullValue: Nothing?) {
+fun ChunkBuilder.literal(nullValue: Nothing?) {
     +NullInstruction
 }
 
-fun BytecodeBuilder.ChunkBuilder.literal(value: Boolean) {
+fun ChunkBuilder.literal(value: Boolean) {
     if (value) {
         +TrueInstruction
     } else {
@@ -26,57 +23,56 @@ fun BytecodeBuilder.ChunkBuilder.literal(value: Boolean) {
     }
 }
 
-fun BytecodeBuilder.ChunkBuilder.function(chunkId: ChunkId) {
-    val constantId = storeConstant(FunctionConstant(chunkId))
-    +ConstantInstruction(constantId)
+fun ChunkBuilder.function(chunkReference: BytecodeBuilder.ChunkReference) {
+    +ConstantInstruction(storeConstant(chunkReference))
 }
 
-fun BytecodeBuilder.ChunkBuilder.pop() {
+fun ChunkBuilder.pop() {
     +PopInstruction
 }
 
-fun BytecodeBuilder.ChunkBuilder.getLocalVariable(relativeSlot: Byte) {
+fun ChunkBuilder.getLocalVariable(relativeSlot: Byte) {
     +GetLocalInstruction(relativeSlot)
 }
 
-fun BytecodeBuilder.ChunkBuilder.setLocalVariable(relativeSlot: Byte, value: Code) {
+fun ChunkBuilder.setLocalVariable(relativeSlot: Byte, value: Code) {
     +value
     +SetLocalInstruction(relativeSlot)
 }
 
-fun BytecodeBuilder.ChunkBuilder.getGlobalVariable(identifier: String) {
+fun ChunkBuilder.getGlobalVariable(identifier: String) {
     +GetGlobalInstruction(storeConstant(identifier))
 }
 
-fun BytecodeBuilder.ChunkBuilder.setGlobalVariable(identifier: String) {
+fun ChunkBuilder.setGlobalVariable(identifier: String) {
     +SetGlobalInstruction(storeConstant(identifier))
 }
 
-fun BytecodeBuilder.ChunkBuilder.defineGlobalVariable(identifier: String) {
+fun ChunkBuilder.defineGlobalVariable(identifier: String) {
     +DefineGlobalInstruction(storeConstant(identifier))
 }
 
-fun BytecodeBuilder.ChunkBuilder.jumpTo(destination: BytecodeBuilder.ChunkBuilder.Label) {
+fun ChunkBuilder.jumpTo(destination: ChunkBuilder.Label) {
     val selfLabel = looseLabel()
     +JumpDirective(destination, selfLabel)
     putLabel(selfLabel)
 }
 
-fun BytecodeBuilder.ChunkBuilder.jumpForwardIfFalse(destination: BytecodeBuilder.ChunkBuilder.Label) {
+fun ChunkBuilder.jumpForwardIfFalse(destination: ChunkBuilder.Label) {
     val selfLabel = looseLabel()
     +JumpForwardIfFalseInstruction(destination, selfLabel)
     putLabel(selfLabel)
 }
 
-fun BytecodeBuilder.ChunkBuilder.self() {
-    function(id)
+fun ChunkBuilder.self() {
+    function(selfReference)
 }
 
-fun BytecodeBuilder.ChunkBuilder.call(arity: Byte) {
+fun ChunkBuilder.call(arity: Byte) {
     +CallInstruction(arity)
 }
 
-fun BytecodeBuilder.ChunkBuilder.ret(value: Code) {
+fun ChunkBuilder.ret(value: Code) {
     +value
     +ReturnInstruction
 }

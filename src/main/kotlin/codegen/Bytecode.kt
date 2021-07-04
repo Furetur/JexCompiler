@@ -53,7 +53,7 @@ data class StringConstant(val value: String) : BytecodeConstant() {
     }
 }
 
-data class FunctionConstant(val chunkId: ChunkId) : BytecodeConstant() {
+data class FunctionConstant(val chunkReference: BytecodeBuilder.ChunkReference) : BytecodeConstant() {
     override val type: Byte = 2
-    override fun compileValue(): List<Byte> = listOf(chunkId)
+    override fun compileValue(): List<Byte> = listOf(chunkReference.id)
 }
