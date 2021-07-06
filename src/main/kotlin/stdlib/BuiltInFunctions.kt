@@ -3,11 +3,14 @@ package stdlib
 import codegen.BytecodeBuilder
 import codegen.Code
 import codegen.dsl.*
+import identifiers.GettableValue
 
-interface BuiltInFunction {
-    val name: String
+interface BuiltInFunction : GettableValue {
+    override val name: String
     val arity: Int
     val code: Code
+
+    override fun getValue() = code
 }
 
 fun BytecodeBuilder.addBuiltInFunction(builtInFunction: BuiltInFunction): BytecodeBuilder.ChunkReference =

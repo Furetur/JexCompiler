@@ -44,12 +44,9 @@ fun ChunkBuilder.getGlobalVariable(identifier: String) {
     +GetGlobalInstruction(storeConstant(identifier))
 }
 
-fun ChunkBuilder.setGlobalVariable(identifier: String) {
+fun ChunkBuilder.setGlobalVariable(identifier: String, value: Code) {
+    +value
     +SetGlobalInstruction(storeConstant(identifier))
-}
-
-fun ChunkBuilder.defineGlobalVariable(identifier: String) {
-    +DefineGlobalInstruction(storeConstant(identifier))
 }
 
 fun ChunkBuilder.jumpTo(destination: ChunkBuilder.Label) {
