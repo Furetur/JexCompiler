@@ -37,7 +37,7 @@ class BytecodeBuilder {
     }
 
     fun printAssembly() {
-        for (chunk in chunks.values) {
+        for (chunk in chunks.values.sortedBy { it.id }) {
             chunk.chunk.printAssembly()
             println()
         }
@@ -48,5 +48,7 @@ class BytecodeBuilder {
     inner class ChunkReference(val chunkName: String) {
         val id: ChunkId
             get() = chunks[chunkName]?.id ?: error("Chunk not given an id")
+
+        override fun toString(): String = "Chunk`$chunkName`"
     }
 }

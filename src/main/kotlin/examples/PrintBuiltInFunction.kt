@@ -1,25 +1,29 @@
 package examples
 
 import codegen.BytecodeBuilder
-import codegen.dsl.*
-import stdlib.FactFunction
+import codegen.dsl.call
+import codegen.dsl.function
+import codegen.dsl.literal
+import codegen.dsl.print
+import stdlib.PrintlnFunction
 import stdlib.addBuiltInFunction
 import java.io.File
 
 fun main() {
     val builder = BytecodeBuilder()
 
-    val factFunction = builder.addBuiltInFunction(FactFunction)
+    val printlnFunction = builder.addBuiltInFunction(PrintlnFunction)
 
     builder.main {
+        print { function(printlnFunction) }
         print {
-            function(factFunction)
+            function(printlnFunction)
             literal(6)
             call(1)
         }
     }
 
-    val file = File("output/fact_6.bytecode")
+    val file = File("output/println.bytecode")
     file.createNewFile()
     builder.bytecode().write(file)
     builder.printAssembly()
