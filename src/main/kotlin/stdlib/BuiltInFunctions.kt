@@ -37,3 +37,15 @@ object FactFunction : BuiltInFunction {
         }
     }
 }
+
+object PrintlnFunction : BuiltInFunction {
+    override val name: String = "println"
+    override val arity: Int = 1
+    override val code: Code = {
+        ret {
+            print {
+                getLocalVariable(1)
+            }
+        }
+    }
+}
