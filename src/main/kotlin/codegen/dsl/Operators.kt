@@ -10,6 +10,11 @@ fun ChunkBuilder.print(code: Code) {
     +PrintInstruction
 }
 
+fun ChunkBuilder.not(value: Code) {
+    +value
+    +NotInstruction
+}
+
 fun ChunkBuilder.equal(left: Code, right: Code) {
     +left
     +right

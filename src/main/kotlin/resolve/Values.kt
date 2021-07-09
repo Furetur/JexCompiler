@@ -15,6 +15,7 @@ interface GettableValue : Value {
 }
 
 interface SettableValue : Value {
+    fun declareValue(code: Code): Code
     fun setValue(code: Code): Code
 }
 
@@ -26,6 +27,8 @@ class UserLocalVariable(override val name: String, private val localStackSlot: B
     override fun setValue(code: Code): Code = {
         setLocalVariable(localStackSlot, code)
     }
+
+    override fun declareValue(code: Code): Code = code
 }
 
 class UserGlobalVariable(override val name: String) : GettableValue, SettableValue {
@@ -34,6 +37,10 @@ class UserGlobalVariable(override val name: String) : GettableValue, SettableVal
     }
 
     override fun setValue(code: Code): Code = {
+        setGlobalVariable(name, code)
+    }
+
+    override fun declareValue(code: Code): Code = {
         setGlobalVariable(name, code)
     }
 }
