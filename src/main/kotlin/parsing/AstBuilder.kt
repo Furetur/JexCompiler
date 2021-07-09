@@ -55,8 +55,12 @@ class AstBuilder : SimpleLanguageBaseVisitor<AstNode?>() {
     override fun visitFunctionDefinitionStmt(ctx: SimpleLanguageParser.FunctionDefinitionStmtContext?): AstNode {
         val functionName = ctx!!.functionDefinition().ID().asIdentifier()
         val formalArguments = ctx.functionDefinition().functionArguments()?.ID()?.map { it.asIdentifier() } ?: emptyList()
-        val body = Block(blockId++, ctx.functionDefinition().functionBody().statement().map { visit(it) as Statement })
-        return FunctionDeclarationStatement(functionName, formalArguments, body)
+        val statements = ctx.functionDefinition().functionBody().statement().map { visit(it) }.filterIsInstance<Statement>()
+        return FunctionDeclarationStatement(functionName, formalArguments, statements)
+    }
+
+    override fun visitReturnStatement(ctx: SimpleLanguageParser.ReturnStatementContext?): AstNode {
+        return ReturnStatement(visit(ctx?.expression()!!) as Expression)
     }
 
     override fun visitNewlineStmt(ctx: SimpleLanguageParser.NewlineStmtContext?) = null

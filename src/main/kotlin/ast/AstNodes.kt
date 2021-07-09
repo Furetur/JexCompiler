@@ -22,25 +22,22 @@ data class VariableDeclarationStatement(val variableName: Identifier, val value:
     override val children = listOf(variableName, value)
 
     override fun <T> acceptVisitor(visitor: AstVisitor<T>): T = visitor.visitVariableDeclarationStatement(this)
-
 }
 
 data class AssignmentStatement(val assignee: AstNode, val value: Expression) : Statement {
     override val children = listOf(assignee, value)
 
     override fun <T> acceptVisitor(visitor: AstVisitor<T>): T = visitor.visitAssignmentStatement(this)
-
 }
 
 data class FunctionDeclarationStatement(
     val name: Identifier,
     val formalArguments: List<Identifier>,
-    val body: Block
+    val statements: List<Statement>
 ) : Statement {
-    override val children: List<AstNode> = listOf(name) + formalArguments + listOf(body)
+    override val children: List<AstNode> = listOf(name) + formalArguments + statements
 
     override fun <T> acceptVisitor(visitor: AstVisitor<T>): T = visitor.visitFunctionDeclarationStatement(this)
-
 }
 
 data class IfStatement(
@@ -70,15 +67,6 @@ data class ReturnStatement(
     override val children = listOf(value)
 
     override fun <T> acceptVisitor(visitor: AstVisitor<T>): T = visitor.visitReturnStatement(this)
-
-}
-
-data class PrintStatement(
-    val value: Expression
-) : Statement {
-    override val children = listOf(value)
-
-    override fun <T> acceptVisitor(visitor: AstVisitor<T>): T = visitor.visitPrintStatement(this)
 
 }
 

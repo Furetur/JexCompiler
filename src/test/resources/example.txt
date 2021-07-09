@@ -1,12 +1,6 @@
-var i = 0
-
-while (i < 100) {
-    println(i)
-    i = i + 1
-    {
-        var i = 10
-        println("Also")
-        println(i)
+{
+    fn f(x) {
+        println(fact(x))
     }
+    f(6)
 }
-

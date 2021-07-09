@@ -20,6 +20,8 @@ private class IdentifierResolverVisitor(buildInFunctions: List<BuiltInFunction>)
         return ResolutionResult(resolvedIdentifiers, blockSizes)
     }
 
+    override val default = Unit
+
     override fun visitBlock(block: Block) {
         val previousScope = currentScope
         val newScope = Scope.Block(currentScope)
@@ -44,6 +46,18 @@ private class IdentifierResolverVisitor(buildInFunctions: List<BuiltInFunction>)
         resolvedIdentifiers[identifier] = value
     }
 
+    override fun visitFunctionDeclarationStatement(functionDeclarationStatement: FunctionDeclarationStatement) {
+        declareIdentifier(functionDeclarationStatement.name)
+
+        val previousScope = currentScope
+        val functionScope = Scope.Function(globalScope, functionDeclarationStatement.formalArguments.map { it.text })
+        currentScope = functionScope
+        for (statement in functionDeclarationStatement.statements) {
+            visit(statement)
+        }
+        currentScope = previousScope
+    }
+
     override fun visitIdentifier(identifier: Identifier) {
         val value = currentScope[identifier.text] ?: error("Not declared identifier ${identifier.text}")
         if (identifier in resolvedIdentifiers) {
@@ -51,6 +65,11 @@ private class IdentifierResolverVisitor(buildInFunctions: List<BuiltInFunction>)
         } else {
             resolvedIdentifiers[identifier] = value
         }
+    }
+
+    private fun declareIdentifier(identifier: Identifier) {
+        val value = currentScope.declareValue(identifier.text)
+        resolvedIdentifiers[identifier] = value
     }
 }
 
@@ -99,7 +118,24 @@ private sealed class Scope {
             }
         }
 
-        override operator fun contains(identifier: String): Boolean = identifier in values
+        override operator fun contains(identifier: String): Boolean = identifier in values || identifier in parentScope
         override operator fun get(identifier: String): Value? = values[identifier] ?: parentScope[identifier]
+    }
+
+    class Function(val global: Global, formalArguments: List<String>) : Scope() {
+        private val block = Block(global)
+
+        init {
+            for (formalArgument in formalArguments) {
+                block.declareValue(formalArgument)
+            }
+        }
+
+        override val nextStackSlot: Int
+            get() = block.nextStackSlot
+
+        override fun declareValue(identifier: String): Value = block.declareValue(identifier)
+        override operator fun contains(identifier: String): Boolean = identifier in block
+        override fun get(identifier: String): Value? = block[identifier]
     }
 }

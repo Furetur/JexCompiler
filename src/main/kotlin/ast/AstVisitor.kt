@@ -1,9 +1,11 @@
 package ast
 
 interface AstVisitor<T> {
+    val default: T
+
     fun visit(astNode: AstNode): T = astNode.acceptVisitor(this)
 
-    private fun visitNonTerminalNode(node: AstNode): T = node.children.map { visit(it) }.last()
+    private fun visitNonTerminalNode(node: AstNode): T = node.children.map { visit(it) }.lastOrNull() ?: default
 
     fun visitProgram(program: Program): T = visitNonTerminalNode(program)
     fun visitBlock(block: Block): T = visitNonTerminalNode(block)
@@ -19,7 +21,6 @@ interface AstVisitor<T> {
     fun visitIfStatement(ifStatement: IfStatement): T = visitNonTerminalNode(ifStatement)
     fun visitWhileStatement(whileStatement: WhileStatement): T = visitNonTerminalNode(whileStatement)
     fun visitReturnStatement(returnStatement: ReturnStatement): T = visitNonTerminalNode(returnStatement)
-    fun visitPrintStatement(printStatement: PrintStatement): T = visitNonTerminalNode(printStatement)
     fun visitExpressionStatement(expressionStatement: ExpressionStatement): T =
         visitNonTerminalNode(expressionStatement)
 

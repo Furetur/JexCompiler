@@ -35,6 +35,8 @@ private class CompilerVisitor(builtInFunctions: List<BuiltInFunction>, private v
         return bytecodeBuilder
     }
 
+    override val default: Code = {}
+
     override fun visitProgram(program: Program): Code = {
         for (statement in program.statements) {
             +visit(statement)
@@ -66,8 +68,17 @@ private class CompilerVisitor(builtInFunctions: List<BuiltInFunction>, private v
         setValue(value, visit(assignmentStatement.value))
     }
 
-    override fun visitFunctionDeclarationStatement(functionDeclarationStatement: FunctionDeclarationStatement): Code {
-        TODO("Implement functions")
+    override fun visitFunctionDeclarationStatement(functionDeclarationStatement: FunctionDeclarationStatement): Code = {
+        val (name, formalArguments, statements) = functionDeclarationStatement
+        val functionReference = bytecodeBuilder.addFunction(name.text, formalArguments.size) {
+            for (statement in statements) {
+                +visit(statement)
+            }
+            ret { literal(null) }
+        }
+        val resolvedFunctionName = resolutionResult.resolvedIdentifiers[name] ?: error("Function name not resolved :(")
+        require(resolvedFunctionName is SettableValue) { "Cannot declare a function with name $name" }
+        setValue(resolvedFunctionName) { function(functionReference) }
     }
 
     override fun visitReturnStatement(returnStatement: ReturnStatement): Code = {
@@ -80,11 +91,6 @@ private class CompilerVisitor(builtInFunctions: List<BuiltInFunction>, private v
             +visit(argument)
         }
         call(callExpression.arguments.size.toByte())
-    }
-
-    // TODO: remove this atrocity
-    override fun visitPrintStatement(printStatement: PrintStatement): Code = {
-        TODO("remove this")
     }
 
     override fun visitIfStatement(ifStatement: IfStatement): Code = {
