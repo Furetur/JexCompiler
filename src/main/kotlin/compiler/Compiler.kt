@@ -6,18 +6,35 @@ import codegen.dsl.*
 import resolve.GettableValue
 import resolve.ResolutionResult
 import resolve.SettableValue
+import stdlib.BuiltInFunction
+import stdlib.addBuiltInFunction
 
-fun compile(resolutionResult: ResolutionResult, program: Program): Bytecode {
-    val compilerVisitor = CompilerVisitor(resolutionResult)
-
-    val bytecodeBuilder = BytecodeBuilder()
-    bytecodeBuilder.main {
-        +compilerVisitor.visit(program)
-    }
+fun compile(builtInFunctions: List<BuiltInFunction>, resolutionResult: ResolutionResult, program: Program): Bytecode {
+    val compilerVisitor = CompilerVisitor(builtInFunctions, resolutionResult)
+    val bytecodeBuilder = compilerVisitor.compile(program)
     return bytecodeBuilder.bytecode().also { bytecodeBuilder.printAssembly() }
 }
 
-private class CompilerVisitor(private val resolutionResult: ResolutionResult) : AstVisitor<Code> {
+private class CompilerVisitor(builtInFunctions: List<BuiltInFunction>, private val resolutionResult: ResolutionResult) :
+    AstVisitor<Code> {
+    private val bytecodeBuilder = BytecodeBuilder()
+    private val builtInFunctionReferences = mutableMapOf<String, BytecodeBuilder.ChunkReference>()
+
+    init {
+        for (builtInFunction in builtInFunctions) {
+            val functionReference = bytecodeBuilder.addBuiltInFunction(builtInFunction)
+            builtInFunctionReferences[builtInFunction.name] = functionReference
+        }
+    }
+
+    fun compile(program: Program): BytecodeBuilder {
+        val code = visitProgram(program)
+        bytecodeBuilder.main {
+            +code
+        }
+        return bytecodeBuilder
+    }
+
     override fun visitProgram(program: Program): Code = {
         for (statement in program.statements) {
             +visit(statement)
@@ -53,12 +70,16 @@ private class CompilerVisitor(private val resolutionResult: ResolutionResult) : 
         TODO("Implement functions")
     }
 
-    override fun visitReturnStatement(returnStatement: ReturnStatement): Code {
-        TODO("Implement functions")
+    override fun visitReturnStatement(returnStatement: ReturnStatement): Code = {
+        ret(visit(returnStatement.value))
     }
 
-    override fun visitCallExpression(callExpression: CallExpression): Code {
-        TODO("Implement functions")
+    override fun visitCallExpression(callExpression: CallExpression): Code = {
+        +visit(callExpression.callee)
+        for (argument in callExpression.arguments) {
+            +visit(argument)
+        }
+        call(callExpression.arguments.size.toByte())
     }
 
     // TODO: remove this atrocity
@@ -70,6 +91,7 @@ private class CompilerVisitor(private val resolutionResult: ResolutionResult) : 
         require(ifStatement.elseBlock == null) { "Else blocks are not supported yet" }
         ifStatement(condition = visit(ifStatement.condition), thenCode = visit(ifStatement.thenBlock))
     }
+
     override fun visitWhileStatement(whileStatement: WhileStatement): Code = {
         whileLoop(condition = visit(whileStatement.condition), body = visit(whileStatement.body))
     }
@@ -130,7 +152,13 @@ private class CompilerVisitor(private val resolutionResult: ResolutionResult) : 
         val identifier = identifierExpression.identifier
         val value = resolutionResult.resolvedIdentifiers[identifier] ?: error("Resolved identifier not found")
         if (value is GettableValue) {
-            getValue(value)
+            if (value is BuiltInFunction) {
+                val functionReference =
+                    builtInFunctionReferences[value.name] ?: error("Built in function reference not found")
+                function(functionReference)
+            } else {
+                getValue(value)
+            }
         } else {
             error("Identifier $identifier cannot be used as an expression")
         }

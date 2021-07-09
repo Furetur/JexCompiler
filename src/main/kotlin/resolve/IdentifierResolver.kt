@@ -100,6 +100,6 @@ private sealed class Scope {
         }
 
         override operator fun contains(identifier: String): Boolean = identifier in values
-        override operator fun get(identifier: String): Value? = values[identifier]
+        override operator fun get(identifier: String): Value? = values[identifier] ?: parentScope[identifier]
     }
 }

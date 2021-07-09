@@ -12,7 +12,7 @@ fun main() {
     val file = File("src/test/resources/example.txt")
     val program = parseSourceCode(file.readText())
     val resolutionResult = resolveIdentifiers(builtInFunctions, program)
-    val bytecode = compile(resolutionResult, program)
+    val bytecode = compile(builtInFunctions, resolutionResult, program)
 
     val outputFile = File("output/compiler.bytecode")
     bytecode.write(outputFile)

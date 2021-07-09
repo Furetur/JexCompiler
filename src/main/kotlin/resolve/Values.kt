@@ -1,10 +1,8 @@
 package resolve
 
+import codegen.BytecodeBuilder
 import codegen.Code
-import codegen.dsl.getGlobalVariable
-import codegen.dsl.getLocalVariable
-import codegen.dsl.setGlobalVariable
-import codegen.dsl.setLocalVariable
+import codegen.dsl.*
 
 interface Value {
     val name: String

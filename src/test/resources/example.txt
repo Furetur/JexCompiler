@@ -1,6 +1,12 @@
-var doStuff = true
+var i = 0
 
-if (doStuff) {
-    var a = 0
+while (i < 100) {
+    println(i)
+    i = i + 1
+    {
+        var i = 10
+        println("Also")
+        println(i)
+    }
 }
 
