@@ -78,7 +78,7 @@ private class CompilerVisitor(builtInFunctions: List<BuiltInFunction>, private v
         }
         val resolvedFunctionName = resolutionResult.resolvedIdentifiers[name] ?: error("Function name not resolved :(")
         require(resolvedFunctionName is SettableValue) { "Cannot declare a function with name $name" }
-        setValue(resolvedFunctionName) { function(functionReference) }
+        declareValue(resolvedFunctionName) { function(functionReference) }
     }
 
     override fun visitReturnStatement(returnStatement: ReturnStatement): Code = {

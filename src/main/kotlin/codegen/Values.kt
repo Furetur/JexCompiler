@@ -10,3 +10,7 @@ fun ChunkBuilder.getValue(gettableValue: GettableValue) {
 fun ChunkBuilder.setValue(settableValue: SettableValue, value: Code) {
     +settableValue.setValue(value)
 }
+
+fun ChunkBuilder.declareValue(settableValue: SettableValue, value: Code) {
+    +settableValue.declareValue(value)
+}
