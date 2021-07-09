@@ -4,7 +4,9 @@ import SimpleLanguageBaseVisitor
 import ast.*
 import org.antlr.v4.runtime.tree.TerminalNode
 
-object AstBuilder : SimpleLanguageBaseVisitor<AstNode?>() {
+class AstBuilder : SimpleLanguageBaseVisitor<AstNode?>() {
+    var blockId = 0
+
     override fun visitProg(ctx: SimpleLanguageParser.ProgContext?): Program {
         val statements = ctx?.statement()!!.map { visit(it) }.filterIsInstance<Statement>()
         return Program(statements)
@@ -12,7 +14,7 @@ object AstBuilder : SimpleLanguageBaseVisitor<AstNode?>() {
 
     override fun visitBlock(ctx: SimpleLanguageParser.BlockContext?): Block {
         val statements = ctx?.statement()!!.map { visit(it) }.filterIsInstance<Statement>()
-        return Block(statements)
+        return Block(blockId++, statements)
     }
 
     // Statements
@@ -50,11 +52,15 @@ object AstBuilder : SimpleLanguageBaseVisitor<AstNode?>() {
         return WhileStatement(condition, bodyBlock)
     }
 
-    override fun visitFunctionDefinitionStmt(ctx: SimpleLanguageParser.FunctionDefinitionStmtContext?): AstNode? {
+    override fun visitFunctionDefinitionStmt(ctx: SimpleLanguageParser.FunctionDefinitionStmtContext?): AstNode {
         val functionName = ctx!!.functionDefinition().ID().asIdentifier()
         val formalArguments = ctx.functionDefinition().functionArguments()?.ID()?.map { it.asIdentifier() } ?: emptyList()
-        val body = Block(ctx.functionDefinition().functionBody().statement().map { visit(it) as Statement })
-        return FunctionDeclarationStatement(functionName, formalArguments, body)
+        val statements = ctx.functionDefinition().functionBody().statement().map { visit(it) }.filterIsInstance<Statement>()
+        return FunctionDeclarationStatement(functionName, formalArguments, statements)
+    }
+
+    override fun visitReturnStatement(ctx: SimpleLanguageParser.ReturnStatementContext?): AstNode {
+        return ReturnStatement(visit(ctx?.expression()!!) as Expression)
     }
 
     override fun visitNewlineStmt(ctx: SimpleLanguageParser.NewlineStmtContext?) = null

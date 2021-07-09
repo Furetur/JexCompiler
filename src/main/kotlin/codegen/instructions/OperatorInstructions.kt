@@ -6,6 +6,8 @@ object PopInstruction : NullaryInstruction(Opcode.Pop)
 
 object PrintInstruction : NullaryInstruction(Opcode.Print)
 
+object NotInstruction : NullaryInstruction(Opcode.Not)
+
 object EqualInstruction : NullaryInstruction(Opcode.Equal)
 
 object GreaterInstruction : NullaryInstruction(Opcode.Greater)
