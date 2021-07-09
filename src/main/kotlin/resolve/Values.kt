@@ -1,4 +1,4 @@
-package identifiers
+package resolve
 
 import codegen.Code
 import codegen.dsl.getGlobalVariable

@@ -3,7 +3,7 @@ package stdlib
 import codegen.BytecodeBuilder
 import codegen.Code
 import codegen.dsl.*
-import identifiers.GettableValue
+import resolve.GettableValue
 
 interface BuiltInFunction : GettableValue {
     override val name: String
