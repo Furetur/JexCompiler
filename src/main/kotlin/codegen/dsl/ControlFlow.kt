@@ -1,10 +1,9 @@
 package codegen.dsl
 
-import codegen.BytecodeBuilder
 import codegen.ChunkBuilder
 import codegen.Code
 
-fun ChunkBuilder.ifStatement(condition: Code, thenCode: Code) {
+fun ChunkBuilder.ifStatement(condition: Code, thenCode: Code, elseCode: Code = {}) {
     val afterThen = looseLabel("after then")
     val afterIf = looseLabel("after if")
 
@@ -18,6 +17,8 @@ fun ChunkBuilder.ifStatement(condition: Code, thenCode: Code) {
     // after THEN
     putLabel(afterThen)
     pop() // pop 0 == 0 from stack
+    // ELSE
+    +elseCode
     // END IF
     putLabel(afterIf)
 }
@@ -38,4 +39,27 @@ fun ChunkBuilder.whileLoop(condition: Code, body: Code) {
     putLabel(afterBody)
     pop()
     // END WHILE
+}
+
+fun ChunkBuilder.and(left: Code, right: Code) {
+    val afterAnd = looseLabel("after and")
+
+    +left
+    jumpForwardIfFalse(afterAnd)
+    pop()
+    +right
+    putLabel(afterAnd)
+}
+
+fun ChunkBuilder.or(left: Code, right: Code) {
+    val afterOr = looseLabel("after or")
+    val beforeRight = looseLabel("before right")
+
+    +left
+    jumpForwardIfFalse(beforeRight)
+    jumpTo(afterOr)
+    putLabel(beforeRight)
+    pop()
+    +right
+    putLabel(afterOr)
 }
