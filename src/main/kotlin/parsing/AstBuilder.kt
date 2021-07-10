@@ -98,7 +98,8 @@ class AstBuilder : SimpleLanguageBaseVisitor<AstNode?>() {
     }
 
     override fun visitStringLiteralExpr(ctx: SimpleLanguageParser.StringLiteralExprContext?): StringLiteralExpression {
-        return StringLiteralExpression(ctx!!.text)
+        val stringValue = ctx?.text?.drop(1)?.dropLast(1) ?: ""
+        return StringLiteralExpression(stringValue)
     }
 
     override fun visitNumberLiteralExpr(ctx: SimpleLanguageParser.NumberLiteralExprContext?): NumberLiteralExpression {

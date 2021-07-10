@@ -94,8 +94,10 @@ private class CompilerVisitor(builtInFunctions: List<BuiltInFunction>, private v
     }
 
     override fun visitIfStatement(ifStatement: IfStatement): Code = {
-        require(ifStatement.elseBlock == null) { "Else blocks are not supported yet" }
-        ifStatement(condition = visit(ifStatement.condition), thenCode = visit(ifStatement.thenBlock))
+        val condition = visit(ifStatement.condition)
+        val thenCode = visit(ifStatement.thenBlock)
+        val elseCode = ifStatement.elseBlock?.let { visit(it) } ?: {}
+        ifStatement(condition, thenCode, elseCode)
     }
 
     override fun visitWhileStatement(whileStatement: WhileStatement): Code = {
@@ -119,8 +121,8 @@ private class CompilerVisitor(builtInFunctions: List<BuiltInFunction>, private v
             "*" -> multiply(left, right)
             "/" -> divide(left, right)
             "-" -> subtract(left, right)
-            "&&" -> TODO("Binary && not supported")
-            "||" -> TODO("Binary || not supported")
+            "&&" -> and(left, right)
+            "||" -> or(left, right)
             ">" -> greater(left, right)
             "<" -> less(left, right)
             ">=" -> not { less(left, right) }

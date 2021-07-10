@@ -1,6 +1,11 @@
-{
-    fn f(x) {
-        println(fact(x))
-    }
-    f(6)
+fn try() {
+    println("Trying")
+    return false
+}
+
+var i = 0
+
+while((i < 10) && !try()) {
+    println(i)
+    i = i + 1
 }
