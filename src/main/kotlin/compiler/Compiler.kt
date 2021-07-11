@@ -9,10 +9,17 @@ import resolve.SettableValue
 import stdlib.BuiltInFunction
 import stdlib.addBuiltInFunction
 
-fun compile(builtInFunctions: List<BuiltInFunction>, resolutionResult: ResolutionResult, program: Program): Bytecode {
+fun compile(
+    builtInFunctions: List<BuiltInFunction>,
+    resolutionResult: ResolutionResult,
+    program: Program,
+    printAssembly: Boolean
+): Bytecode {
     val compilerVisitor = CompilerVisitor(builtInFunctions, resolutionResult)
     val bytecodeBuilder = compilerVisitor.compile(program)
-    return bytecodeBuilder.bytecode().also { bytecodeBuilder.printAssembly() }
+    return bytecodeBuilder.bytecode().also {
+        if (printAssembly) bytecodeBuilder.printAssembly()
+    }
 }
 
 private class CompilerVisitor(builtInFunctions: List<BuiltInFunction>, private val resolutionResult: ResolutionResult) :
