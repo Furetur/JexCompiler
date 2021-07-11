@@ -1,7 +1,6 @@
 name: Kotlin Check Everything
 
 on:
-  push: null
   release:
     types: [created]
 
@@ -16,9 +15,9 @@ jobs:
           java-version: 1.8
       - name: Shadow Jar
         run: ./gradlew shadowJar
-      - name: Upload Fat Jar
-        if: always()
-        uses: actions/upload-artifact@v2
+      - name: Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: JexCompiler
-          path: build/libs/JexCompiler-1.0-SNAPSHOT-all.jar
+          files: build/libs/JexCompiler-1.0-SNAPSHOT-all.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
