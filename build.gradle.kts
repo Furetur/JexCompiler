@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.5.10"
     antlr
+    id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
 group = "me.furetur"
@@ -31,5 +32,18 @@ tasks.generateGrammarSource {
 }
 
 tasks.withType<KotlinCompile>() {
+    dependsOn("generateGrammarSource")
     kotlinOptions.jvmTarget = "1.8"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+    mergeServiceFiles()
+    manifest {
+        attributes["Main-Class"] = "MainKt"
+    }
 }

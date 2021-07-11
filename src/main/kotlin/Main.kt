@@ -14,6 +14,8 @@ val builtInFunctions = listOf(FactFunction, PrintlnFunction)
 
 class CompilerCommand : CliktCommand() {
     val inputFile by argument("input", help = "Input file").file(mustExist = true, canBeDir = false, mustBeReadable = true)
+    val outputFile by argument("output", help = "Output file").file(mustExist = false, canBeDir = false)
+
     val printAssembly by option("-a", "--asm", help = "Print assembly").flag(default = false)
 
     override fun run() {
@@ -21,7 +23,8 @@ class CompilerCommand : CliktCommand() {
         val resolutionResult = resolveIdentifiers(builtInFunctions, program)
         val bytecode = compile(builtInFunctions, resolutionResult, program, printAssembly)
 
-        val outputFile = File("output/compiler.bytecode")
+        outputFile.createNewFile()
+
         bytecode.write(outputFile)
     }
 }
