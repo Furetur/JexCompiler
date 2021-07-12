@@ -23,3 +23,5 @@ object SubtractInstruction : NullaryInstruction(Opcode.Subtract)
 object MultiplyInstruction : NullaryInstruction(Opcode.Multiply)
 
 object DivideInstruction : NullaryInstruction(Opcode.Divide)
+
+object ReadLineInstruction : NullaryInstruction(Opcode.ReadLine)
