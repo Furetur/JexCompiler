@@ -7,11 +7,11 @@ import compiler.compile
 import parsing.parseSourceCode
 import resolve.resolveIdentifiers
 import stdlib.FactFunction
+import stdlib.IntFunction
 import stdlib.PrintlnFunction
 import stdlib.ReadLineFunction
-import java.io.File
 
-val builtInFunctions = listOf(FactFunction, PrintlnFunction, ReadLineFunction)
+val builtInFunctions = listOf(FactFunction, PrintlnFunction, ReadLineFunction, IntFunction)
 
 class CompilerCommand : CliktCommand() {
     val inputFile by argument("input", help = "Input file").file(mustExist = true, canBeDir = false, mustBeReadable = true)

@@ -27,7 +27,8 @@ enum class Opcode {
     Call, // 23
     Return, // 24
     ToString, // 25
-    ReadLine; // 26
+    ReadLine, // 26
+    ParseInt; // 27
 
     fun compile(): Byte = ordinal.toByte()
 }

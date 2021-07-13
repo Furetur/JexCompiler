@@ -25,3 +25,5 @@ object MultiplyInstruction : NullaryInstruction(Opcode.Multiply)
 object DivideInstruction : NullaryInstruction(Opcode.Divide)
 
 object ReadLineInstruction : NullaryInstruction(Opcode.ReadLine)
+
+object ParseIntInstruction : NullaryInstruction(Opcode.ParseInt)
