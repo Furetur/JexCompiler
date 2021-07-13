@@ -5,6 +5,7 @@ import codegen.Code
 import codegen.dsl.*
 import codegen.instructions.ParseIntInstruction
 import codegen.instructions.ReadLineInstruction
+import codegen.instructions.ToStringInstruction
 import resolve.GettableValue
 
 interface BuiltInFunction : GettableValue {
@@ -72,6 +73,17 @@ object IntFunction : BuiltInFunction {
         ret {
             getLocalVariable(1)
             +ParseIntInstruction
+        }
+    }
+}
+
+object StrFunction : BuiltInFunction {
+    override val name: String = "str"
+    override val arity: Int = 1
+    override val code: Code = {
+        ret {
+            getLocalVariable(1)
+            +ToStringInstruction
         }
     }
 }
