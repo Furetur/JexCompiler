@@ -8,4 +8,6 @@ fn sumTo(x) {
     return sum
 }
 
-println(sumTo(5))
+var n = int(readLine())
+
+println(sumTo(n))
