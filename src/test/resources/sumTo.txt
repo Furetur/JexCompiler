@@ -1,0 +1,11 @@
+fn sumTo(x) {
+    var sum = 0
+    var i = 1
+    while (i < x) {
+        sum = sum + i
+        i = i + 1
+    }
+    return sum
+}
+
+println(sumTo(5))
