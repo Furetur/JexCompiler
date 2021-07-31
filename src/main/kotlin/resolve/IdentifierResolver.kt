@@ -39,6 +39,10 @@ private class IdentifierResolverVisitor(buildInFunctions: List<BuiltInFunction>)
 
     override fun visitNullLiteralExpression(nullLiteralExpression: NullLiteralExpression) {}
 
+    override fun visitFieldAccess(fieldAccess: FieldAccess) {
+        visit(fieldAccess.receiver)
+    }
+
     override fun visitVariableDeclarationStatement(variableDeclarationStatement: VariableDeclarationStatement) {
         visit(variableDeclarationStatement.value)
         val identifier = variableDeclarationStatement.variableName

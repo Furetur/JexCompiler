@@ -3,9 +3,9 @@ package compiler
 import ast.*
 import codegen.*
 import codegen.dsl.*
-import resolve.GettableValue
-import resolve.ResolutionResult
-import resolve.SettableValue
+import codegen.instructions.GetFieldInstruction
+import codegen.instructions.SetFieldInstruction
+import resolve.*
 import stdlib.BuiltInFunction
 import stdlib.addBuiltInFunction
 
@@ -69,10 +69,20 @@ private class CompilerVisitor(builtInFunctions: List<BuiltInFunction>, private v
 
     override fun visitAssignmentStatement(assignmentStatement: AssignmentStatement): Code = {
         val assignee = assignmentStatement.assignee
-        require(assignee is Identifier) { "Can assign a value only to identifier" }
-        val value = resolutionResult.resolvedIdentifiers[assignee] ?: error("Identifier $assignee is not resolved")
-        require(value is SettableValue) { "Cannot set value to $assignee" }
-        setValue(value, visit(assignmentStatement.value))
+        when (assignee) {
+            is Identifier -> {
+                val value =
+                    resolutionResult.resolvedIdentifiers[assignee] ?: error("Identifier $assignee is not resolved")
+                require(value is SettableValue) { "Cannot set value to $assignee" }
+                setValue(value, visit(assignmentStatement.value))
+            }
+            is FieldAccess -> {
+                +visit(assignee.receiver)
+                +visit(assignmentStatement.value)
+                +SetFieldInstruction(storeConstant(assignee.fieldName.text))
+            }
+            else -> error("Cannot assign a value to $assignee")
+        }
     }
 
     override fun visitFunctionDeclarationStatement(functionDeclarationStatement: FunctionDeclarationStatement): Code = {
@@ -90,6 +100,11 @@ private class CompilerVisitor(builtInFunctions: List<BuiltInFunction>, private v
 
     override fun visitReturnStatement(returnStatement: ReturnStatement): Code = {
         ret(visit(returnStatement.value))
+    }
+
+    override fun visitFieldAccessExpression(fieldAccessExpression: FieldAccessExpression): Code = {
+        +visit(fieldAccessExpression.fieldAccess.receiver)
+        +GetFieldInstruction(storeConstant(fieldAccessExpression.fieldAccess.fieldName.text))
     }
 
     override fun visitCallExpression(callExpression: CallExpression): Code = {
@@ -180,4 +195,6 @@ private class CompilerVisitor(builtInFunctions: List<BuiltInFunction>, private v
     }
 
     override fun visitIdentifier(identifier: Identifier): Code = {}
+
+    override fun visitFieldAccess(fieldAccess: FieldAccess): Code = {}
 }

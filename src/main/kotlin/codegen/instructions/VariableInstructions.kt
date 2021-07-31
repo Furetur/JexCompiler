@@ -9,7 +9,7 @@ class SetLocalInstruction(relativeSlot: Byte) : ByteInstruction(Opcode.SetLocal,
 
 class GetGlobalInstruction(private val identifierConstantId: ConstantId) :
     ByteInstruction(Opcode.GetGlobal, identifierConstantId) {
-    override fun toAssemblyString(): String = "SetGlobal @$identifierConstantId"
+    override fun toAssemblyString(): String = "GetGlobal @$identifierConstantId"
 }
 
 class SetGlobalInstruction(private val identifierConstantId: ConstantId) :
