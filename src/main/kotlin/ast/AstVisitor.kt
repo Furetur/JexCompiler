@@ -9,6 +9,8 @@ interface AstVisitor<T> {
 
     fun visitProgram(program: Program): T = visitNonTerminalNode(program)
     fun visitBlock(block: Block): T = visitNonTerminalNode(block)
+    fun visitFieldAccess(fieldAccess: FieldAccess) = visitNonTerminalNode(fieldAccess)
+
     fun visitVariableDeclarationStatement(variableDeclarationStatement: VariableDeclarationStatement): T =
         visitNonTerminalNode(variableDeclarationStatement)
 
@@ -38,6 +40,9 @@ interface AstVisitor<T> {
     fun visitNullLiteralExpression(nullLiteralExpression: NullLiteralExpression): T
     fun visitIdentifierExpression(identifierExpression: IdentifierExpression): T =
         visitNonTerminalNode(identifierExpression)
+
+    fun visitFieldAccessExpression(fieldAccessExpression: FieldAccessExpression): T =
+        visitNonTerminalNode(fieldAccessExpression)
 
     fun visitIdentifier(identifier: Identifier): T
 }

@@ -3,6 +3,7 @@ package stdlib
 import codegen.BytecodeBuilder
 import codegen.Code
 import codegen.dsl.*
+import codegen.instructions.NewInstanceInstruction
 import codegen.instructions.ParseIntInstruction
 import codegen.instructions.ReadLineInstruction
 import resolve.GettableValue
@@ -72,6 +73,16 @@ object IntFunction : BuiltInFunction {
         ret {
             getLocalVariable(1)
             +ParseIntInstruction
+        }
+    }
+}
+
+object ObjectFunction : BuiltInFunction {
+    override val name: String = "object"
+    override val arity: Int = 0
+    override val code: Code = {
+        ret {
+            +NewInstanceInstruction
         }
     }
 }
