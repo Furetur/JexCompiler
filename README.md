@@ -14,8 +14,8 @@ It supports
 - [x] if, if-else, while loops
 - [x] functions
 - [x] build-in functions: `input`, `readLine`, `int`, `fact`
-- [ ] objects and `object()` function
-- [ ] linked lists
+- [x] objects and `object()` function
+- [ ] linked lists with normal API
 - [ ] closures
 
 ## How to run Jex
@@ -105,5 +105,18 @@ Functions are just regular values
 var a = println
 println(a)
 ```
+
+### Objects
+
+Firstly, you have to create an empty object and then add some properties.
+
+```
+var person = object()
+person.name = "Emir"
+
+println(person.name)
+```
+
+Linked list [example](src/test/resources/linked_list.txt).
 
 You can find some examples of Jex code in the [resources directory](src/test/resources).
