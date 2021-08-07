@@ -2,9 +2,12 @@ package parsing
 
 import SimpleLanguageBaseVisitor
 import ast.*
+import lexing.Token
+import lexing.asMyToken
+import org.antlr.v4.runtime.Vocabulary
 import org.antlr.v4.runtime.tree.TerminalNode
 
-class AstBuilder : SimpleLanguageBaseVisitor<AstNode?>() {
+class AstBuilder(private val vocabulary: Vocabulary) : SimpleLanguageBaseVisitor<AstNode?>() {
     var blockId = 0
 
     override fun visitProg(ctx: SimpleLanguageParser.ProgContext?): Program {
@@ -88,12 +91,12 @@ class AstBuilder : SimpleLanguageBaseVisitor<AstNode?>() {
     }
 
     override fun visitUnaryOperatorExpr(ctx: SimpleLanguageParser.UnaryOperatorExprContext?): UnaryOperatorExpression {
-        return UnaryOperatorExpression(ctx!!.op!!.asMyToken(), visit(ctx.expression()) as Expression)
+        return UnaryOperatorExpression(ctx!!.op!!.asMyToken(vocabulary), visit(ctx.expression()) as Expression)
     }
 
     override fun visitOperatorExpr(ctx: SimpleLanguageParser.OperatorExprContext?): BinaryOperatorExpression {
         return BinaryOperatorExpression(
-            ctx!!.op!!.asMyToken(),
+            ctx!!.op!!.asMyToken(vocabulary),
             visit(ctx.left) as Expression,
             visit(ctx.right) as Expression
         )
@@ -101,7 +104,7 @@ class AstBuilder : SimpleLanguageBaseVisitor<AstNode?>() {
 
     override fun visitRelExpr(ctx: SimpleLanguageParser.RelExprContext?): BinaryOperatorExpression {
         return BinaryOperatorExpression(
-            ctx!!.rel!!.asMyToken(),
+            ctx!!.rel!!.asMyToken(vocabulary),
             visit(ctx.left) as Expression,
             visit(ctx.right) as Expression
         )
@@ -134,7 +137,5 @@ class AstBuilder : SimpleLanguageBaseVisitor<AstNode?>() {
 
     // Common
 
-    private fun TerminalNode.asIdentifier(): Identifier = Identifier(symbol!!.asMyToken())
-
-    fun org.antlr.v4.runtime.Token.asMyToken() = Token(text!!, line, charPositionInLine)
+    private fun TerminalNode.asIdentifier(): Identifier = Identifier(symbol!!.asMyToken(vocabulary))
 }

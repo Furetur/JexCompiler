@@ -1,5 +1,7 @@
 package ast
 
+import lexing.Token
+
 interface AstNode {
     val children: List<AstNode>
 
@@ -23,5 +25,3 @@ data class Identifier(val token: Token) : AstNode {
 
     override fun <T> acceptVisitor(visitor: AstVisitor<T>): T = visitor.visitIdentifier(this)
 }
-
-data class Token(val text: String, val line: Int, val position: Int)

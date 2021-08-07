@@ -1,5 +1,7 @@
 package ast
 
+import lexing.Token
+
 data class Program(val statements: List<Statement>) : AstNode {
     override val children = statements
 

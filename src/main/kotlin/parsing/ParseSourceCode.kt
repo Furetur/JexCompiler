@@ -10,5 +10,5 @@ fun parseSourceCode(code: String): Program {
     val charStream = CharStreams.fromString(code + "\n")
     val lexer = SimpleLanguageLexer(charStream)
     val parser = SimpleLanguageParser(CommonTokenStream(lexer))
-    return AstBuilder().visitProg(parser.prog()!!)
+    return AstBuilder(lexer.vocabulary).visitProg(parser.prog()!!)
 }
