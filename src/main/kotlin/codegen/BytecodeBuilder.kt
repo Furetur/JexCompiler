@@ -40,6 +40,7 @@ class BytecodeBuilder {
         for (chunk in chunks.values.sortedBy { it.id }) {
             chunk.chunk.printAssembly()
             println()
+            println()
         }
     }
 

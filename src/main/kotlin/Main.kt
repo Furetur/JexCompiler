@@ -8,7 +8,7 @@ import parsing.parseSourceCode
 import resolve.resolveIdentifiers
 import stdlib.*
 
-val builtInFunctions = listOf(FactFunction, PrintlnFunction, ReadLineFunction, IntFunction, StrFunction)
+val builtInFunctions = listOf(FactFunction, PrintlnFunction, ReadLineFunction, IntFunction, StrFunction, ObjectFunction)
 
 class CompilerCommand : CliktCommand() {
     val inputFile by argument("input", help = "Input file").file(mustExist = true, canBeDir = false, mustBeReadable = true)

@@ -63,9 +63,11 @@ class ChunkBuilder(val bytecodeBuilder: BytecodeBuilder, val selfReference: Byte
 
     fun printAssembly() {
         println("Chunk '${selfReference.chunkName}' #${selfReference.id}")
+        println("----- Constants -----")
         for ((index, constant) in constants.withIndex()) {
             println("@$index: $constant")
         }
+        println("----- Code -----")
         var position = 0
         for (instruction in instructions) {
             val labels = labelPositions.entries.filter { it.value == position }.map { labels[it.key] }
