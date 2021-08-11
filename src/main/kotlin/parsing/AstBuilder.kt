@@ -65,6 +65,16 @@ class AstBuilder : SimpleLanguageBaseVisitor<AstNode?>() {
 
     override fun visitNewlineStmt(ctx: SimpleLanguageParser.NewlineStmtContext?) = null
 
+    override fun visitPropertyAssignment(ctx: SimpleLanguageParser.PropertyAssignmentContext?): AssignmentStatement {
+        val receiver = visit(ctx!!.receiver!!) as Expression
+        val fieldName = ctx.ID().asIdentifier()
+        val value = visit(ctx.value) as Expression
+        return AssignmentStatement(
+            FieldAccess(receiver, fieldName),
+            value
+        )
+    }
+
     // Expressions
 
     override fun visitParenExpr(ctx: SimpleLanguageParser.ParenExprContext?): AstNode? {
@@ -115,6 +125,12 @@ class AstBuilder : SimpleLanguageBaseVisitor<AstNode?>() {
     }
 
     override fun visitNullExpr(ctx: SimpleLanguageParser.NullExprContext?) = NullLiteralExpression
+
+    override fun visitPropertyAccessExpression(ctx: SimpleLanguageParser.PropertyAccessExpressionContext?): FieldAccessExpression {
+        val receiver = visit(ctx!!.receiver!!) as Expression
+        val fieldName = ctx.ID().asIdentifier()
+        return FieldAccessExpression(FieldAccess(receiver, fieldName))
+    }
 
     // Common
 

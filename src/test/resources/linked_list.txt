@@ -1,0 +1,41 @@
+fn newList() {
+    var list = object()
+    list.head = null
+    return list
+}
+
+fn newNode(value) {
+    var node = object()
+    node.value = value
+    node.next = null
+    return node
+}
+
+fn addToList(list, value) {
+    if (list.head == null) {
+        list.head = newNode(value)
+        return null
+    }
+    var currentNode = list.head
+    while (currentNode.next != null) {
+        currentNode = currentNode.next
+    }
+    currentNode.next = newNode(value)
+}
+
+fn printList(list) {
+    if (list.head == null) {
+        return null
+    }
+    var currentNode = list.head
+    println(currentNode.value)
+    while (currentNode.next != null) {
+        currentNode = currentNode.next
+        println(currentNode.value)
+    }
+}
+
+var list = newList()
+addToList(list, 1)
+addToList(list, 2)
+printList(list)
