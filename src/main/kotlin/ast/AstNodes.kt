@@ -41,11 +41,13 @@ data class FunctionDeclarationStatement(
 }
 
 data class IfStatement(
-    val condition: Expression,
-    val thenBlock: Block,
+    val ifCondition: Expression,
+    val elseIfConditions: List<Expression>?,
+    val ifThenBlock: Block,
+    val elseIfThenBlocks: List<Block>?,
     val elseBlock: Block?
 ) : Statement {
-    override val children = listOfNotNull(condition, thenBlock, elseBlock)
+    override val children = listOfNotNull(ifCondition, ifThenBlock, elseBlock) + elseIfConditions.orEmpty() + elseIfThenBlocks.orEmpty()
 
     override fun <T> acceptVisitor(visitor: AstVisitor<T>): T = visitor.visitIfStatement(this)
 

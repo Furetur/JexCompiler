@@ -24,7 +24,7 @@ object FactFunction : BuiltInFunction {
     override val arity: Int = 1
     override val code: Code = {
         ifStatement(
-            condition = {
+            ifCondition = {
                 equal({ getLocalVariable(1) }, { literal(1) })
             },
             thenCode = {

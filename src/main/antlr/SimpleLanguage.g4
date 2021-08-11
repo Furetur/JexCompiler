@@ -12,7 +12,7 @@ statement
     | expression NEWLINE # expressionStmt
     | functionDefinition NEWLINE # functionDefinitionStmt
     | classDefinition NEWLINE # classDefinitionStmt
-    | IF LPAREN expression RPAREN thenBlock=block (ELSE elseBlock=block)? NEWLINE # ifStmt
+    | IF LPAREN ifExpression=expression RPAREN ifThenBlock=block (ELSE IF LPAREN elseIfExpression=expression RPAREN elseIfThenBlock=block)* (ELSE elseBlock=block)? NEWLINE # ifStmt
     | WHILE LPAREN expression RPAREN body=block NEWLINE # whileStmt
     | RETURN expression NEWLINE # returnStatement
     | NEWLINE # newlineStmt

@@ -3,12 +3,12 @@ package codegen.dsl
 import codegen.ChunkBuilder
 import codegen.Code
 
-fun ChunkBuilder.ifStatement(condition: Code, thenCode: Code, elseCode: Code = {}) {
+fun ChunkBuilder.ifStatement(ifCondition: Code, thenCode: Code, elseCode: Code = {}) {
     val afterThen = looseLabel("after then")
     val afterIf = looseLabel("after if")
 
     // IF
-    +condition // CONDITION
+    +ifCondition // CONDITION
     jumpForwardIfFalse(afterThen)
     // THEN
     pop() // pop CONDITION
@@ -21,6 +21,42 @@ fun ChunkBuilder.ifStatement(condition: Code, thenCode: Code, elseCode: Code = {
     +elseCode
     // END IF
     putLabel(afterIf)
+}
+
+fun ChunkBuilder.ifStatement(ifConditions: List<Code>, thenCodes: List<Code>, elseCode: Code = {}) {
+    val afterAllThen = looseLabel("after then")
+    val afterAllIf = looseLabel("after all if")
+    val afterIf = mutableListOf<ChunkBuilder.Label>()
+
+    for ((index, condition) in ifConditions.withIndex()) {
+        afterIf.add(looseLabel("after $index if"))
+    }
+
+    var currentAfterCondition: ChunkBuilder.Label? = null
+
+    for ((index, condition) in ifConditions.withIndex()) {
+        currentAfterCondition = looseLabel("after $index")
+        +condition
+        jumpForwardIfFalse(afterIf[index])
+        pop()
+        +thenCodes[index]
+        jumpTo(afterAllIf)
+        putLabel(afterIf[index])
+    }
+
+//    +ifCondition
+//    jumpForwardIfFalse(afterAllThen)
+//
+//    pop()
+//    +thenCode
+//
+//    jumpTo(afterIf)
+
+    putLabel(afterAllThen)
+    pop()
+    +elseCode
+
+    putLabel(afterAllIf)
 }
 
 fun ChunkBuilder.whileLoop(condition: Code, body: Code) {
