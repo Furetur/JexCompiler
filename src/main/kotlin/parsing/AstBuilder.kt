@@ -40,10 +40,20 @@ class AstBuilder : SimpleLanguageBaseVisitor<AstNode?>() {
     }
 
     override fun visitIfStmt(ctx: SimpleLanguageParser.IfStmtContext?): IfStatement {
-        val condition = visit(ctx!!.expression()) as Expression
-        val thenBlock = visitBlock(ctx.thenBlock)
+//        val condition = visit(ctx!!.expression()) as Expression
+//        val thenBlock = visitBlock(ctx.thenBlock)
+//        val elseBlock = ctx.elseBlock?.let { visitBlock(it) }
+//        return IfStatement(condition, thenBlock, elseBlock)
+
+        val ifCondition = visit(ctx!!.ifExpression) as Expression
+        val elseIfConditionContexts = ctx.expression().drop(1)
+        val elseIfConditions = elseIfConditionContexts.map { visit(it) as Expression }
+        val ifThenBlock = visitBlock(ctx.ifThenBlock)
+        val elseIfThenBlockContexts = ctx.block().drop(1)
+        val elseIfThenBlocks = elseIfThenBlockContexts.map { visitBlock(it) }
         val elseBlock = ctx.elseBlock?.let { visitBlock(it) }
-        return IfStatement(condition, thenBlock, elseBlock)
+
+        return IfStatement(ifCondition, elseIfConditions, ifThenBlock, elseIfThenBlocks, elseBlock)
     }
 
     override fun visitWhileStmt(ctx: SimpleLanguageParser.WhileStmtContext?): AstNode {

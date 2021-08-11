@@ -8,6 +8,7 @@ import codegen.instructions.SetFieldInstruction
 import resolve.*
 import stdlib.BuiltInFunction
 import stdlib.addBuiltInFunction
+import java.util.concurrent.locks.Condition
 
 fun compile(
     builtInFunctions: List<BuiltInFunction>,
@@ -116,10 +117,28 @@ private class CompilerVisitor(builtInFunctions: List<BuiltInFunction>, private v
     }
 
     override fun visitIfStatement(ifStatement: IfStatement): Code = {
-        val condition = visit(ifStatement.condition)
-        val thenCode = visit(ifStatement.thenBlock)
+        val ifCondition = visit(ifStatement.ifCondition)
+        val elseIfConditions = ifStatement.elseIfConditions?.map { visit(it) }
+        val ifThenCode = visit(ifStatement.ifThenBlock)
+        val elseIfThenCodes = ifStatement.elseIfThenBlocks?.map { visit(it) }
         val elseCode = ifStatement.elseBlock?.let { visit(it) } ?: {}
-        ifStatement(condition, thenCode, elseCode)
+
+        val conditions: MutableList<Code>
+        if (elseIfConditions != null) {
+            conditions = elseIfConditions.toMutableList()
+            conditions.add(0, ifCondition)
+        } else {
+            conditions = mutableListOf(ifCondition)
+        }
+
+        val thenCodes: MutableList<Code>
+        if (elseIfThenCodes != null) {
+            thenCodes = elseIfThenCodes.toMutableList()
+            thenCodes.add(0, ifThenCode)
+        } else {
+            thenCodes = mutableListOf(ifThenCode)
+        }
+        ifStatement(conditions, thenCodes, elseCode)
     }
 
     override fun visitWhileStatement(whileStatement: WhileStatement): Code = {
