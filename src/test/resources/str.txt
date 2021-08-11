@@ -1,0 +1,4 @@
+println(str(1))
+println(str)
+println(str(true != true))
+println("Answer is " + str(42))

@@ -33,6 +33,7 @@ LBRACE: '{';
 RBRACE: '}';
 COMMA: ',';
 
+
 // keywords
 VAR: 'var';
 IF: 'if';
@@ -51,5 +52,8 @@ SUPER: 'super';
 ID: [a-zA-Z]+;
 NUMBER: [0-9]+;
 STRINGLITERAL: '"' ~ ["\r\n]* '"' ;
-NEWLINE: '\r'? '\n' ;
+NEWLINE: ('\r' '\n'? | '\n') ;
 WS: [ \t]+ -> skip ;
+
+// comments
+SINGLE_LINE_COMMENT: '//' ~[\r\n]* -> skip;
