@@ -1,68 +1,89 @@
 package lexing
 
 
-sealed class Token(val text: String, val line: Int, val position: Int) {
+sealed class Token(val text: String, val type: TokenType, val line: Int, val position: Int) {
     override fun toString(): String = "Token '$text' at $line:$position"
 }
 
-enum class KeywordType(val text: String) {
+enum class TokenType(val description: String, val isSimple: Boolean = true) {
+    // ------------
+    // Keywords
+
     Var("var"),
     If("if"),
     Else("else"),
     While("while"),
     Fn("fn"),
-    Return("return");
-}
+    Return("return"),
 
-class KeywordToken(val type: KeywordType, line: Int, position: Int) : Token(type.text, line, position)
+    // ------------
+    // Operators
 
-enum class OperatorType(val text: String) {
-    // assign
+    Dot("."),
     Assign("="),
-
-    // arithmetic
+    // Arithmetic
     Plus("+"),
     Minus("-"),
     Mul("*"),
     Div("/"),
-
-    // logic
+    // Logic
     And("&&"),
     Or("||"),
     Not("!"),
-
-    // equality
+    // Comparison and equality
     Eq("=="),
     Neq("!="),
-
-    // comparison
     Lt("<"),
     Lte("<="),
     Gt(">"),
     Gte(">="),
-    // Dot
-    Dot(".");
-}
 
-class OperatorToken(val type: OperatorType, line: Int, position: Int) : Token(type.text, line, position)
+    // ------------
+    // Punctuation
 
-enum class PunctuationType(val text: String) {
     Comma(","),
     Semi(";"),
     LParen("("),
     RParen(")"),
     LBrace("{"),
-    RBrace("}")
+    RBrace("}"),
+
+    // ------------
+    // Name
+
+    Name("name", isSimple = false),
+
+    // ------------
+    // Literal
+
+    Num("number literal", isSimple = false),
+    Str("string literal", isSimple = false),
+    Bool("boolean literal", isSimple = false),
+    Null("null");
+
+    override fun toString(): String = description
 }
 
-class PunctuationToken(val type: PunctuationType, line: Int, position: Int) : Token(type.text, line, position)
+val unaryOperators = listOf(TokenType.Minus, TokenType.Not)
 
-class NameToken(text: String, line: Int, position: Int) : Token(text, line, position)
+val relationOperators = listOf(TokenType.Eq, TokenType.Neq, TokenType.Gt, TokenType.Gte, TokenType.Lt, TokenType.Lte)
 
-class NumberToken(val value: Int, line: Int, position: Int) : Token(value.toString(), line, position)
+val additiveOperators = listOf(TokenType.Plus, TokenType.Minus, TokenType.Or)
 
-class BooleanToken(val value: Boolean, line: Int, position: Int) : Token(value.toString(), line, position)
+val multiplicativeOperators = listOf(TokenType.Mul, TokenType.Div, TokenType.And)
 
-class StringToken(val value: String, line: Int, position: Int) : Token(value, line, position)
+val binaryOperators = relationOperators + additiveOperators + multiplicativeOperators
 
-class NullToken(line: Int, position: Int) : Token("null", line, position)
+class SimpleToken(type: TokenType, line: Int, position: Int) : Token(type.description, type, line, position) {
+    init {
+        require(type.isSimple) { "Attempted to construct a SimpleToken of non-simple type $type" }
+    }
+}
+
+class NameToken(text: String, line: Int, position: Int) : Token(text, TokenType.Name, line, position)
+
+class NumberToken(val value: Int, line: Int, position: Int) : Token(value.toString(), TokenType.Num, line, position)
+
+class BooleanToken(val value: Boolean, line: Int, position: Int) : Token(value.toString(), TokenType.Bool, line, position)
+
+class StringToken(val value: String, line: Int, position: Int) : Token(value, TokenType.Str, line, position)

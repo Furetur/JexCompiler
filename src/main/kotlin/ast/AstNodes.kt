@@ -1,5 +1,8 @@
 package ast
 
+import lexing.BooleanToken
+import lexing.NumberToken
+import lexing.StringToken
 import lexing.Token
 
 data class Program(val statements: List<Statement>) : AstNode {
@@ -109,25 +112,28 @@ data class BinaryOperatorExpression(val operator: Token, val left: Expression, v
     override fun <T> acceptVisitor(visitor: AstVisitor<T>): T = visitor.visitBinaryOperatorExpression(this)
 }
 
-data class StringLiteralExpression(val value: String) : Expression {
+data class StringLiteralExpression(val token: StringToken) : Expression {
+    val value = token.value
     override val children = emptyList<AstNode>()
 
     override fun <T> acceptVisitor(visitor: AstVisitor<T>): T = visitor.visitStringLiteralExpression(this)
 }
 
-data class NumberLiteralExpression(val value: Int) : Expression {
+data class NumberLiteralExpression(val token: NumberToken) : Expression {
+    val value = token.value
     override val children = emptyList<AstNode>()
 
     override fun <T> acceptVisitor(visitor: AstVisitor<T>): T = visitor.visitNumberLiteralExpression(this)
 }
 
-data class BooleanLiteralExpression(val value: Boolean) : Expression {
+data class BooleanLiteralExpression(val token: BooleanToken) : Expression {
+    val value = token.value
     override val children = emptyList<AstNode>()
 
     override fun <T> acceptVisitor(visitor: AstVisitor<T>): T = visitor.visitBooleanLiteralExpression(this)
 }
 
-object NullLiteralExpression : Expression {
+data class NullLiteralExpression(val token: Token) : Expression {
     override val children = emptyList<AstNode>()
 
     override fun <T> acceptVisitor(visitor: AstVisitor<T>): T = visitor.visitNullLiteralExpression(this)
