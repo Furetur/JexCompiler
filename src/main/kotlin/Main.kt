@@ -10,8 +10,15 @@ import parsing.parseSourceCode
 import resolve.resolveIdentifiers
 import stdlib.*
 import java.lang.NullPointerException
+import kotlin.system.exitProcess
 
 val builtInFunctions = listOf(FactFunction, PrintlnFunction, ReadLineFunction, IntFunction, StrFunction, ObjectFunction)
+
+
+fun exitWithExceptionMessage(e: Exception) {
+    System.err.println(e.message)
+    exitProcess(1)
+}
 
 class CompilerCommand : CliktCommand() {
     val inputFile by argument("input", help = "Input file").file(mustExist = true, canBeDir = false, mustBeReadable = true)
@@ -31,11 +38,11 @@ class CompilerCommand : CliktCommand() {
 
             bytecode.write(outputFile)
         } catch (e: ParseCancellationException) {
-            System.err.println(e.message)
+            exitWithExceptionMessage(e)
         } catch (e: IllegalStateException) {
-            System.err.println(e.message)
+            exitWithExceptionMessage(e)
         } catch (e: NullPointerException) {
-            System.err.println(e.message)
+            exitWithExceptionMessage(e)
         }
     }
 }
