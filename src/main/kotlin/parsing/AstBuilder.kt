@@ -63,8 +63,6 @@ class AstBuilder : SimpleLanguageBaseVisitor<AstNode?>() {
         return ReturnStatement(visit(ctx?.expression()!!) as Expression)
     }
 
-    override fun visitNewlineStmt(ctx: SimpleLanguageParser.NewlineStmtContext?) = null
-
     override fun visitPropertyAssignment(ctx: SimpleLanguageParser.PropertyAssignmentContext?): AssignmentStatement {
         val receiver = visit(ctx!!.receiver!!) as Expression
         val fieldName = ctx.ID().asIdentifier()
