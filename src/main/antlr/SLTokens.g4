@@ -52,8 +52,6 @@ THIS: 'this';
 SUPER: 'super';
 
 // whitespace and comments
-//NEWLINE: ('\r' '\n'? | '\n') -> skip;
-//WS: [ \t]+ -> skip;
 WS: [ \t\r\n]+ -> skip;
 SINGLE_LINE_COMMENT: '//' ~[\r\n]* -> skip;
 
