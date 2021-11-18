@@ -1,5 +1,8 @@
 lexer grammar SLTokens;
 
+// literals
+STRINGLITERAL: '"' ~["\\\r\n]* '"';
+
 // assignment
 ASSIGN: '=';
 
@@ -48,12 +51,10 @@ CLASS: 'class';
 THIS: 'this';
 SUPER: 'super';
 
+// whitespace and comments
+WS: [ \t\r\n]+ -> skip;
+SINGLE_LINE_COMMENT: '//' ~[\r\n]* -> skip;
+
 // literals
 ID: [a-zA-Z]+;
 NUMBER: [0-9]+;
-STRINGLITERAL: '"' ~ ["\r\n]* '"' ;
-NEWLINE: ('\r' '\n'? | '\n') ;
-WS: [ \t]+ -> skip ;
-
-// comments
-SINGLE_LINE_COMMENT: '//' ~[\r\n]* -> skip;
