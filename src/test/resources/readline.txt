@@ -1,8 +1,8 @@
-println("Whats your name?")
-var name = readLine()
+println("Whats your name?");
+var name = readLine();
 
 if (name == "max") {
-    println("Goodbye, " + name)
+    println("Goodbye, " + name);
 } else {
-    println("Hello, " + name)
+    println("Hello, " + name);
 }

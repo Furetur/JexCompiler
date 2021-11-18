@@ -1,9 +1,9 @@
-println("This program will calculate factorial of n")
-println("Please enter n:")
-var n = int(readLine())
+println("This program will calculate factorial of n");
+println("Please enter n:");
+var n = int(readLine());
 
 if (n == null) {
-    println("n has to be an integer")
+    println("n has to be an integer");
 } else {
-    println(fact(n))
+    println(fact(n));
 }

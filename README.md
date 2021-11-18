@@ -37,54 +37,54 @@ To run Jex code you need to run
 ### Ints, booleans, strings
 
 ```
-1 + 2 * 5 - (10 / 2)
-true && false
-true || false
-"a" + "b"
+1 + 2 * 5 - (10 / 2);
+true && false;
+true || false;
+"a" + "b";
 ```
 
 ### Variables
 
 ```
-var globalVariable = 1
+var globalVariable = 1;
 {
-  var localVariable = 2 
+  var localVariable = 2; 
 }
 ```
 
 ### Read and write
 
 ```
-var readFromTerminal = readLine()
-println("Hello World")
+var readFromTerminal = readLine();
+println("Hello World");
 
-var readInt = int(readLine())
+var readInt = int(readLine());
 
 if (readInt == null) {
-    println("Failed to parse int")
+    println("Failed to parse int");
 } else {
-    println("Success")
+    println("Success");
 }
 ```
 
 ### Ifs and whiles
 
 ```
-var name = readLine()
+var name = readLine();
 if (name == "Emir") {
-    println("Hehe")
+    println("Hehe");
 } else {
-    println("Hey")
+    println("Hey");
 }
 
 if (name == "emir") {
-    println("You should capitalize your name, emir")
+    println("You should capitalize your name, emir");
 }
 ```
 
 ```
 while(true) {
-    println("Working")
+    println("Working");
 }
 ```
 
@@ -92,18 +92,18 @@ while(true) {
 
 ```
 fn greet(name) {
-    println("Hello, " + name)
+    println("Hello, " + name);
 }
 
-println("Whats your name?")
-greet(readLine())
+println("Whats your name?");
+greet(readLine());
 ```
 
 Functions are just regular values
 
 ```
-var a = println
-println(a)
+var a = println;
+println(a);
 ```
 
 ### Objects
@@ -111,10 +111,10 @@ println(a)
 Firstly, you have to create an empty object and then add some properties.
 
 ```
-var person = object()
-person.name = "Emir"
+var person = object();
+person.name = "Emir";
 
-println(person.name)
+println(person.name);
 ```
 
 Linked list [example](src/test/resources/linked_list.txt).
