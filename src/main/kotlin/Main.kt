@@ -4,11 +4,21 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.file
 import compiler.compile
+import org.antlr.v4.runtime.misc.ParseCancellationException
+import parsing.ParsingErrorListener
 import parsing.parseSourceCode
 import resolve.resolveIdentifiers
 import stdlib.*
+import java.lang.NullPointerException
+import kotlin.system.exitProcess
 
 val builtInFunctions = listOf(FactFunction, PrintlnFunction, ReadLineFunction, IntFunction, StrFunction, ObjectFunction)
+
+
+fun exitWithExceptionMessage(e: Exception) {
+    System.err.println(e.message)
+    exitProcess(1)
+}
 
 class CompilerCommand : CliktCommand() {
     val inputFile by argument("input", help = "Input file").file(mustExist = true, canBeDir = false, mustBeReadable = true)
@@ -17,13 +27,23 @@ class CompilerCommand : CliktCommand() {
     val printAssembly by option("-a", "--asm", help = "Print assembly").flag(default = false)
 
     override fun run() {
-        val program = parseSourceCode(inputFile.readText())
-        val resolutionResult = resolveIdentifiers(builtInFunctions, program)
-        val bytecode = compile(builtInFunctions, resolutionResult, program, printAssembly)
+        try {
+            val program = parseSourceCode(inputFile.readText())
+            ParsingErrorListener.throwErrorsStackIfNotEmpty()
 
-        outputFile.createNewFile()
+            val resolutionResult = resolveIdentifiers(builtInFunctions, program)
+            val bytecode = compile(builtInFunctions, resolutionResult, program, printAssembly)
 
-        bytecode.write(outputFile)
+            outputFile.createNewFile()
+
+            bytecode.write(outputFile)
+        } catch (e: ParseCancellationException) {
+            exitWithExceptionMessage(e)
+        } catch (e: IllegalStateException) {
+            exitWithExceptionMessage(e)
+        } catch (e: NullPointerException) {
+            exitWithExceptionMessage(e)
+        }
     }
 }
 
